@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduSearch – Thư Viện Số Học Thuật</title>
+  <meta name="description" content="Hệ thống tìm kiếm tài liệu học tập thông minh sử dụng AI semantic search + Pyro5 distributed fault-tolerant nodes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <!-- ── Animated Background ─────────────────────────────── -->
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" id="logo-link">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">Edu<span class="accent">Search</span></span>
+      </a>
+      <nav class="nav-links">
+        <a href="#" id="nav-home">Trang chủ</a>
+        <a href="#node-panel" id="nav-nodes">Node Status</a>
+        <a href="#about-section" id="nav-about">Giới thiệu</a>
+      </nav>
+      <div class="header-badge">
+        <span class="dot-live"></span> Distributed AI
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hero ────────────────────────────────────────────── -->
+  <section class="hero" id="hero-section">
+    <div class="container hero-inner">
+      <div class="hero-tag">
+        <span>🎓</span> Thư viện số trường đại học · Fault Tolerant
+      </div>
+      <h1 class="hero-title">
+        Tìm kiếm tài liệu<br />
+        <span class="gradient-text">thông minh với AI</span>
+      </h1>
+      <p class="hero-subtitle">
+        Kiến trúc phân tán <strong>2 Node Pyro5</strong> — tắt bất kỳ node nào, hệ thống vẫn hoạt động và trả kết quả từ node còn lại.
+      </p>
+
+      <!-- Search Box -->
+      <div class="search-wrapper" id="search-wrapper">
+        <div class="search-box glass" id="search-box">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="VD: machine learning, deep learning, natural language processing..."
+            autocomplete="off"
+            autofocus
+          />
+          <button class="search-btn" id="search-btn" type="button">
+            <span class="btn-text">Tìm kiếm</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+
+        <!-- Quick Tags -->
+        <div class="quick-tags" id="quick-tags">
+          <span class="tag-label">Tìm nhanh:</span>
+          <button class="qtag" data-q="machine learning">Machine Learning</button>
+          <button class="qtag" data-q="deep learning neural network">Deep Learning</button>
+          <button class="qtag" data-q="natural language processing">NLP</button>
+          <button class="qtag" data-q="computer vision object detection">Computer Vision</button>
+          <button class="qtag" data-q="reinforcement learning">Reinforcement</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number" data-count="{{ stats.total_docs }}">0</span>
+          <span class="stat-label">Tài liệu</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-count="{{ stats.total_cats }}">0</span>
+          <span class="stat-label">Danh mục</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-count="2">0</span>
+          <span class="stat-label">Node</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NODE STATUS PANEL  ← Đây là nơi thể hiện Fault Tolerance
+       ═══════════════════════════════════════════════════════ -->
+  <section class="node-panel-section" id="node-panel">
+    <div class="container">
+      <div class="section-label">
+        <span class="label-dot"></span>
+        TRẠNG THÁI HỆ THỐNG PHÂN TÁN · Fault Tolerance Demo
+      </div>
+
+      <div class="node-grid">
+
+        <!-- Node 1 -->
+        <div class="node-card glass" id="node-card-1">
+          <div class="node-card-header">
+            <div class="node-icon">🖥️</div>
+            <div class="node-title-group">
+              <span class="node-name">Node 1</span>
+              <span class="node-port">port: 9090</span>
+            </div>
+            <div class="node-status-badge" id="node1-badge">
+              <span class="status-dot"></span>
+              <span class="status-text">Đang kiểm tra...</span>
+            </div>
+          </div>
+          <div class="node-details">
+            <div class="node-detail-row">
+              <span class="nd-label">Collection</span>
+              <code class="nd-value">documents_1</code>
+            </div>
+            <div class="node-detail-row">
+              <span class="nd-label">Tài liệu</span>
+              <code class="nd-value">ID 0 – 49</code>
+            </div>
+            <div class="node-detail-row">
+              <span class="nd-label">Latency</span>
+              <code class="nd-value" id="node1-latency">–</code>
+            </div>
+          </div>
+          <div class="node-last-result" id="node1-result">
+            <span class="result-label">Kết quả truy vấn cuối:</span>
+            <span class="result-val" id="node1-result-val">–</span>
+          </div>
+          <div class="fault-tag" id="node1-fault" style="display:none">
+            ⚠️ NODE OFFLINE · Fault Tolerance: hệ thống vẫn tiếp tục với Node 2
+          </div>
+        </div>
+
+        <!-- Coordinator (center) -->
+        <div class="coordinator-card glass">
+          <div class="coord-icon">⚡</div>
+          <div class="coord-title">Coordinator</div>
+          <div class="coord-sub">ThreadPoolExecutor</div>
+          <div class="coord-flow">
+            <div class="flow-line flow-up" id="flow-node1"></div>
+            <div class="flow-center">
+              <div class="coord-merge">MERGE<br/>&amp; SORT</div>
+            </div>
+            <div class="flow-line flow-down" id="flow-node2"></div>
+          </div>
+          <div class="coord-algo">
+            <code>top_k = 8</code><br/>
+            <code>sort by score ↓</code>
+          </div>
+        </div>
+
+        <!-- Node 2 -->
+        <div class="node-card glass" id="node-card-2">
+          <div class="node-card-header">
+            <div class="node-icon">🖥️</div>
+            <div class="node-title-group">
+              <span class="node-name">Node 2</span>
+              <span class="node-port">port: 9092</span>
+            </div>
+            <div class="node-status-badge" id="node2-badge">
+              <span class="status-dot"></span>
+              <span class="status-text">Đang kiểm tra...</span>
+            </div>
+          </div>
+          <div class="node-details">
+            <div class="node-detail-row">
+              <span class="nd-label">Collection</span>
+              <code class="nd-value">documents_2</code>
+            </div>
+            <div class="node-detail-row">
+              <span class="nd-label">Tài liệu</span>
+              <code class="nd-value">ID 50 – 99</code>
+            </div>
+            <div class="node-detail-row">
+              <span class="nd-label">Latency</span>
+              <code class="nd-value" id="node2-latency">–</code>
+            </div>
+          </div>
+          <div class="node-last-result" id="node2-result">
+            <span class="result-label">Kết quả truy vấn cuối:</span>
+            <span class="result-val" id="node2-result-val">–</span>
+          </div>
+          <div class="fault-tag" id="node2-fault" style="display:none">
+            ⚠️ NODE OFFLINE · Fault Tolerance: hệ thống vẫn tiếp tục với Node 1
+          </div>
+        </div>
+
+      </div><!-- /node-grid -->
+
+      <!-- Fault-Tolerance Alert Banner -->
+      <div class="ft-banner" id="ft-banner" style="display:none">
+        <div class="ft-icon">🛡️</div>
+        <div class="ft-content">
+          <strong>Fault Tolerance đang hoạt động!</strong>
+          <span id="ft-banner-msg">Một node bị lỗi, nhưng hệ thống vẫn trả kết quả từ node còn lại.</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Category Filters ────────────────────────────────── -->
+  <section class="filter-section" id="filter-section">
+    <div class="container">
+      <div class="filter-bar" id="filter-bar" role="group" aria-label="Lọc theo danh mục">
+        {% for cat in categories %}
+        <button
+          class="filter-btn {% if cat == 'All' %}active{% endif %}"
+          data-cat="{{ cat }}"
+          id="filter-{{ loop.index }}"
+        >
+          {% if cat == 'All' %}🗂️ Tất cả
+          {% elif cat == 'Artificial Intelligence' %}🤖 {{ cat }}
+          {% elif cat == 'Machine Learning' %}📊 {{ cat }}
+          {% elif cat == 'Deep Learning' %}🧠 {{ cat }}
+          {% elif cat == 'NLP' %}💬 {{ cat }}
+          {% elif cat == 'Computer Vision' %}👁️ {{ cat }}
+          {% else %}📄 {{ cat }}
+          {% endif %}
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Results ──────────────────────────────────────────── -->
+  <main class="results-section" id="results-section">
+    <div class="container">
+
+      <!-- Result meta bar -->
+      <div class="results-meta" id="results-meta" style="display:none">
+        <div class="meta-left">
+          <span class="result-count" id="result-count"></span>
+          <span class="result-query" id="result-query"></span>
+        </div>
+        <div class="meta-right" id="node-badges-row"></div>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-container" id="loading" style="display:none">
+        <div class="loader">
+          <div class="loader-ring"></div>
+          <div class="loader-ring loader-ring-2"></div>
+          <div class="loader-ring loader-ring-3"></div>
+        </div>
+        <p class="loading-text">Đang gửi truy vấn song song đến các node...</p>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">🎓</div>
+        <h2>Chào mừng đến EduSearch</h2>
+        <p>Nhập từ khóa vào ô tìm kiếm để bắt đầu khám phá kho tài liệu học thuật.</p>
+        <div class="featured-grid">
+          <div class="featured-card" data-q="machine learning fundamentals"><span class="feat-icon">📊</span><span>Machine Learning</span></div>
+          <div class="featured-card" data-q="deep learning"><span class="feat-icon">🧠</span><span>Deep Learning</span></div>
+          <div class="featured-card" data-q="artificial intelligence"><span class="feat-icon">🤖</span><span>Artificial Intelligence</span></div>
+          <div class="featured-card" data-q="natural language processing"><span class="feat-icon">💬</span><span>NLP</span></div>
+          <div class="featured-card" data-q="computer vision image recognition"><span class="feat-icon">👁️</span><span>Computer Vision</span></div>
+          <div class="featured-card" data-q="reinforcement learning game"><span class="feat-icon">🎮</span><span>Reinforcement Learning</span></div>
+        </div>
+      </div>
+
+      <!-- No results -->
+      <div class="no-results" id="no-results" style="display:none">
+        <div class="no-results-icon">😔</div>
+        <h3>Không tìm thấy tài liệu phù hợp</h3>
+        <p>Thử tìm kiếm với từ khóa khác hoặc bỏ bộ lọc danh mục.</p>
+      </div>
+
+      <!-- Results grid -->
+      <div class="results-grid" id="results-grid"></div>
+    </div>
+  </main>
+
+  <!-- ── About Section ───────────────────────────────────── -->
+  <section class="about-section" id="about-section">
+    <div class="container">
+      <h2 class="section-title">Về hệ thống</h2>
+      <div class="about-grid">
+        <div class="about-card glass">
+          <div class="about-icon">🔬</div>
+          <h3>Tìm kiếm ngữ nghĩa</h3>
+          <p>Sử dụng <strong>Sentence-BERT</strong> sinh vector 384 chiều, tìm theo độ tương đồng thực sự — không phải keyword matching.</p>
+        </div>
+        <div class="about-card glass">
+          <div class="about-icon">🛡️</div>
+          <h3>Fault Tolerance</h3>
+          <p>Nếu <strong>Node 1 offline</strong>, coordinator bắt exception, trả <code>[]</code> cho node đó và vẫn trả kết quả từ <strong>Node 2</strong>. Hệ thống không bị crash.</p>
+        </div>
+        <div class="about-card glass">
+          <div class="about-icon">⚡</div>
+          <h3>Tìm kiếm song song</h3>
+          <p><strong>ThreadPoolExecutor</strong> gửi truy vấn đến 2 node cùng lúc, merge kết quả và sort theo score — tối ưu tốc độ.</p>
+        </div>
+        <div class="about-card glass">
+          <div class="about-icon">🌐</div>
+          <h3>Pyro5 RPC</h3>
+          <p>Các node giao tiếp qua <strong>Pyro5 Remote Procedure Call</strong> — URI cố định, transparent như gọi hàm local.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ───────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-logo"><span>📚</span> EduSearch</div>
+      <p class="footer-desc">Hệ thống tìm kiếm tài liệu học tập · Đồ án Ứng dụng Phân tán</p>
+      <div class="footer-tags">
+        <span>Milvus v2.4</span>
+        <span>Sentence-BERT</span>
+        <span>Pyro5 RPC</span>
+        <span>Flask</span>
+        <span>Fault Tolerance</span>
+        <span>ThreadPoolExecutor</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
